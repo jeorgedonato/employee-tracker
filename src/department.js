@@ -1,4 +1,4 @@
-const db = require('./db/db');
+const db = require('../db/db');
 
 module.exports = class Department {
 
@@ -18,13 +18,14 @@ module.exports = class Department {
       });
   }
 
-  addDepartment(name) {
-    db.query("insert into departments set ?",
-      { name: name },
+  addDepartment(data) {
+    const query = db.query("insert into departments set ?",
+      data,
       function (err, res) {
         if (err) throw err;
-        console.log(`Added ${name} in Department`);
+        console.log(`Added ${data.name} in Department`);
       });
+    // console.log(query.sql);
   }
 
   updateDepartment(id, name) {
@@ -32,7 +33,7 @@ module.exports = class Department {
       [{ name: name }, { id: id }],
       function (err, res) {
         if (err) throw err;
-        console.log(`Updated ${name} in Department`);
+        console.log(`Updated '${name}' in Department`);
       });
   }
 

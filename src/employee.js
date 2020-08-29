@@ -1,4 +1,4 @@
-const db = require('./db/db');
+const db = require('../db/db');
 const Role = require('./role');
 
 module.exports = class Employee extends Role {
