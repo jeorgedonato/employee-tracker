@@ -1,25 +1,33 @@
-const inquirer = require('inquirer');
-const cTable = require('console.table');
-const Employee = require('./src/employee');
-const db = require('./db/db')
+const db = require('./db/db');
 
+const Employee = require('./src/employee');
+const inquirer = require('inquirer');
+
+//Class Init
 class Init {
 
-  viewAllEmp() {
+  async viewAllEmp() {
     const employee = new Employee();
-    cTable.getTable(employee.getAllEmployee());
+    employee.getAllEmployee()
+    cTable.getTable();
   }
 
-  viewAllDep() {
-
-  }
-
-  viewAllMng() {
+  viewEmpByDep() {
 
   }
 
-  viewAllDepartments() {
+  viewEmpByMng() {
 
+  }
+
+  async viewAllDepartments() {
+    try {
+      const employee = new Employee();
+      const data = await employee.getAllDepartment();
+      console.log(data)
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   viewAllRoles() {
@@ -41,19 +49,22 @@ class Init {
         name: 'name',
         type: 'input',
         message: "Enter Department Name",
-
       }
     ]).then(function (data) {
       employee.addDepartment({ name: data.name });
+      console.log(`\nAdded ${data.name} in Department`);
       initF();
     }).catch(function (err) {
-      console.log('Something went wrong');
-    })
+      console.log('Something went wrong in init');
+    });
   }
 
 }
+//End Class Init
 
-function initF() {
+
+//Init Function
+const initF = () => {
   const init = new Init();
   inquirer.prompt(
     [
@@ -61,15 +72,27 @@ function initF() {
         name: 'queryType',
         type: 'list',
         choices: [
+          new inquirer.Separator("---= View Queries =---"),
           { name: "View all Employees", value: "viewAllEmp" },
-          { name: "View all Employees by Department", value: "viewAllDep" },
-          { name: "View all Employees by Manager", value: "viewAllMng" },
+          { name: "View all Employees by Department", value: "viewEmpByDep" },
+          { name: "View all Employees by Manager", value: "viewEmpByMng" },
           { name: "View all Departments", value: "viewAllDepartments" },
           { name: "View all Roles", value: "viewAllRoles" },
+          new inquirer.Separator("---= Add Queries =---"),
           { name: "Add Employee", value: "addEmp" },
           { name: "Add Role", value: "addRole" },
           { name: "Add Department", value: "addDep" },
+          new inquirer.Separator("---= Update Queries =---"),
+          { name: "Update Department", value: "updateDep" },
+          { name: "Update Role", value: "updateRole" },
+          { name: "Update Employee", value: "updateEmployee" },
+          new inquirer.Separator("---= Delete Queries =---"),
+          { name: "Delete Employee", value: "deleteDep" },
+          { name: "Delete Role", value: "deleteRole" },
+          { name: "Delete Employee", value: "deleteEmployee" },
+          new inquirer.Separator("---= Close App Query =---"),
           { name: "Close the App", value: "closeApp" },
+          new inquirer.Separator(),
         ],
         message: "What would you like to do"
       }
@@ -78,25 +101,25 @@ function initF() {
     // console.log(data)
     switch (data.queryType) {
       case "viewAllEmp":
-
+        init.viewAllEmp();
         break;
-      case "viewAllDep":
-
+      case "viewEmpByDep":
+        init.viewEmpByDep();
         break;
-      case "viewAllMng":
-
+      case "viewEmpByMng":
+        init.viewEmpByMng();
         break;
       case "viewAllDepartments":
-
+        init.viewAllDepartments();
         break;
       case "viewAllRoles":
-
+        init.viewAllRoles();
         break;
       case "addEmp":
-
+        init.addEmp();
         break;
       case "addRole":
-
+        init.addRole();
         break;
       case "addDep":
         init.addDep();
@@ -109,10 +132,10 @@ function initF() {
         break;
     }
   }).catch(err => {
-    console.log('Something went wrong')
+    console.log('Something went wrong in switch');
   });
 }
+//End Init Function
 
 initF();
-
 

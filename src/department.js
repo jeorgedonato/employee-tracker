@@ -1,12 +1,15 @@
 const db = require('../db/db');
-
+const cTable = require('console.table');
+// console.log("this is db : ", db)
 module.exports = class Department {
 
-  getAllDepartment() {
-    db.query("select * from departments", function (err, res) {
-      if (err) throw err;
-      return res;
-    });
+  async getAllDepartment() {
+    try {
+      let query = await db("select * from departments");
+      console.log("this is the quesry: ");
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   getDepartment(id) {
@@ -23,7 +26,7 @@ module.exports = class Department {
       data,
       function (err, res) {
         if (err) throw err;
-        console.log(`Added ${data.name} in Department`);
+        return res;
       });
     // console.log(query.sql);
   }

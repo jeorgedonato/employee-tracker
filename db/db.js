@@ -1,4 +1,5 @@
 const mySql = require('mysql');
+const util = require('util');
 
 const connection = mySql.createConnection({
   host: '127.0.0.1',
@@ -7,4 +8,7 @@ const connection = mySql.createConnection({
   database: 'tracker_db'
 });
 
-module.exports = connection;
+const querySync = util.promisify(connection.query);
+connection.connect();
+
+module.exports = querySync;
