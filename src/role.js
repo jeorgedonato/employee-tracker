@@ -3,7 +3,7 @@ const Department = require('./department');
 
 module.exports = class Role extends Department {
 
-  getAllRole() {
+  async getAllRole() {
     try {
       const db = new Database();
       let query = await db.query("select * from roles");

@@ -7,13 +7,36 @@ const db = new Database();
 class Init {
 
   async viewAllEmp() {
-    const employee = new Employee();
-    employee.getAllEmployee()
-    cTable.getTable();
+    try {
+      const employee = new Employee();
+      const data = await employee.getAllEmployee();
+      const table = cTable.getTable(data);
+      console.log(table);
+      initF();
+      return;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  viewEmpByDep() {
-
+  async viewEmpByDep() {
+    try {
+      const employee = new Employee();
+      const deps = await employee.getAllDepartment();
+      const dep_id = await inquirer.prompt([{
+        name: 'id',
+        type: 'list',
+        message: "Please choose a department",
+        choices: deps.map(d => { return { name: d.name, value: d.id } })
+      }])
+      const data = await employee.getEmployeeByDep(dep_id.id);
+      const table = cTable.getTable(data);
+      console.log(table);
+      initF();
+      return;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   viewEmpByMng() {
@@ -33,7 +56,7 @@ class Init {
     }
   }
 
-  viewAllRoles() {
+  async viewAllRoles() {
     try {
       const employee = new Employee();
       const data = await employee.getAllRole();
@@ -50,8 +73,35 @@ class Init {
 
   }
 
-  addRole() {
-
+  async addRole() {
+    try {
+      const employee = new Employee();
+      const deps = await employee.getAllDepartment();
+      const role = await inquirer.prompt([
+        {
+          name: 'department_id',
+          type: 'list',
+          message: "Please select which department",
+          choices: deps.map(d => { return { name: d.name, value: d.id } })
+        },
+        {
+          name: 'title',
+          type: 'input',
+          message: "Enter Role Title",
+        },
+        {
+          name: 'salary',
+          type: 'input',
+          message: "Enter Role Salary",
+          validate: 
+        }
+      ]);
+      await employee.addDepartment(role);
+      console.log(`\nAdded ${data.name} in Role`);
+      initF();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async addDep() {
@@ -62,13 +112,31 @@ class Init {
         type: 'input',
         message: "Enter Department Name",
       }]);
-      const res = await employee.addDepartment({ name: data.name });
+      await employee.addDepartment({ name: data.name });
       console.log(`\nAdded ${data.name} in Department`);
       initF();
     } catch (error) {
       console.log(error);
     }
   }
+
+  // async updateDep() {
+  //   try {
+  //     const employee = new Employee();
+  //     const getOne = await employee.getDepartment
+  //     const data = await inquirer.prompt([{
+  //       name: 'name',
+  //       type: 'input',
+  //       message: "Enter Department Name",
+  //       default:
+  //     }]);
+  //     await employee.updateDepartment({ name: data.name });
+  //     console.log(`\nUpdated ${data.name} in Department`);
+  //     initF();
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
 }
 //End Class Init

@@ -1,13 +1,17 @@
-const db = require('../db/db');
+const Database = require('../db/db');
 const Role = require('./role');
 
 module.exports = class Employee extends Role {
 
-  getAllEmployee() {
-    db.query("select * from employees", function (err, res) {
-      if (err) throw err;
-      return res;
-    });
+  async getAllEmployee() {
+    try {
+      const db = new Database();
+      let query = await db.query("select emp.id,emp.first_name,emp.last_name,r.title,d.name,r.salary,concat(emp.first_name, ' ', emp.last_name) as manager from employees emp inner join roles r on emp.role_id = r.id inner join departments d on r.department_id = d.id");
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   getEmployee(id) {
@@ -17,6 +21,17 @@ module.exports = class Employee extends Role {
         if (err) throw err;
         return res;
       });
+  }
+
+  async getEmployeeByDep(department_id) {
+    try {
+      const db = new Database();
+      let query = await db.query(`select emp.id,emp.first_name,emp.last_name,r.title,d.name,r.salary,concat(emp.first_name, ' ', emp.last_name) as manager from employees emp inner join roles r on emp.role_id = r.id inner join departments d on r.department_id = d.id where r.department_id = ${department_id}`);
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   addEmployee(data) {
