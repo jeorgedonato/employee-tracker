@@ -1,13 +1,17 @@
-const db = require('../db/db');
+const Database = require('../db/db');
 const Department = require('./department');
 
 module.exports = class Role extends Department {
 
   getAllRole() {
-    db.query("select * from roles", function (err, res) {
-      if (err) throw err;
-      return res;
-    });
+    try {
+      const db = new Database();
+      let query = await db.query("select * from roles");
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   getRole(id) {

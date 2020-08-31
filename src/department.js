@@ -1,34 +1,38 @@
-const db = require('../db/db');
-const cTable = require('console.table');
-// console.log("this is db : ", db)
+const Database = require('../db/db');
+
 module.exports = class Department {
 
   async getAllDepartment() {
     try {
-      let query = await db("select * from departments");
-      console.log("this is the quesry: ");
+      const db = new Database();
+      let query = await db.query("select * from departments");
+      db.close();
+      return query;
     } catch (error) {
       console.log(error);
     }
   }
 
   getDepartment(id) {
-    db.query("select * from departments where ?",
-      { id: id },
-      function (err, res) {
-        if (err) throw err;
-        return res;
-      });
+    try {
+      const db = new Database();
+      let query = await db.query("select * from departments where ?", { id: id });
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  addDepartment(data) {
-    const query = db.query("insert into departments set ?",
-      data,
-      function (err, res) {
-        if (err) throw err;
-        return res;
-      });
-    // console.log(query.sql);
+  async addDepartment(data) {
+    try {
+      const db = new Database();
+      let query = await db.query("insert into departments set ?", data);
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   updateDepartment(id, name) {

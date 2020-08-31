@@ -1,8 +1,8 @@
-const db = require('./db/db');
-
+const Database = require('./db/db');
 const Employee = require('./src/employee');
 const inquirer = require('inquirer');
-
+const cTable = require('console.table');
+const db = new Database();
 //Class Init
 class Init {
 
@@ -24,14 +24,26 @@ class Init {
     try {
       const employee = new Employee();
       const data = await employee.getAllDepartment();
-      console.log(data)
+      const table = cTable.getTable(data);
+      console.log(table);
+      initF();
+      return;
     } catch (error) {
       console.log(error);
     }
   }
 
   viewAllRoles() {
-
+    try {
+      const employee = new Employee();
+      const data = await employee.getAllRole();
+      const table = cTable.getTable(data);
+      console.log(table);
+      initF();
+      return;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   addEmp() {
@@ -42,21 +54,20 @@ class Init {
 
   }
 
-  addDep() {
-    const employee = new Employee();
-    inquirer.prompt([
-      {
+  async addDep() {
+    try {
+      const employee = new Employee();
+      const data = await inquirer.prompt([{
         name: 'name',
         type: 'input',
         message: "Enter Department Name",
-      }
-    ]).then(function (data) {
-      employee.addDepartment({ name: data.name });
+      }]);
+      const res = await employee.addDepartment({ name: data.name });
       console.log(`\nAdded ${data.name} in Department`);
       initF();
-    }).catch(function (err) {
-      console.log('Something went wrong in init');
-    });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
 }
@@ -125,14 +136,14 @@ const initF = () => {
         init.addDep();
         break;
       case "closeApp":
-        db.end();
+        db.close();
         break;
 
       default:
         break;
     }
   }).catch(err => {
-    console.log('Something went wrong in switch');
+    console.log("switch: ", err);
   });
 }
 //End Init Function
