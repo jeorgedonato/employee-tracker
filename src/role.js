@@ -6,7 +6,7 @@ module.exports = class Role extends Department {
   async getAllRole() {
     try {
       const db = new Database();
-      let query = await db.query("select * from roles");
+      let query = await db.query("select r.id,r.title,r.salary,d.name as department_name from roles r inner join departments d on r.department_id = d.id");
       db.close();
       return query;
     } catch (error) {
@@ -14,24 +14,26 @@ module.exports = class Role extends Department {
     }
   }
 
-  getRole(id) {
-    db.query("select * from roles where ?",
-      { id: id },
-      function (err, res) {
-        if (err) throw err;
-        return res;
-      });
+  async getRole(id) {
+    try {
+      const db = new Database();
+      let query = await db.query("select r.id,r.title,r.salary,d.name as department_name from roles r inner join departments d on r.department_id = d.id where r.id = ?", [id]);
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  addRole(data) {
-    db.query("insert into roles set ?",
-      {
-        data
-      },
-      function (err, res) {
-        if (err) throw err;
-        console.log("Added 1 Role!");
-      });
+  async addRole(data) {
+    try {
+      const db = new Database();
+      let query = await db.query("insert into roles set ?", data);
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   updateRole(id, data) {
