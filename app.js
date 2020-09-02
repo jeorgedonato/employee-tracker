@@ -58,6 +58,25 @@ class Init {
     }
   }
 
+  async viewBudgDep() {
+    try {
+      const employee = new Employee();
+      const departments = await employee.getAllDepartment();
+      const inquire = await inquirer.prompt([{
+        name: 'id',
+        type: 'list',
+        message: "Please choose a department",
+        choices: departments.map(d => { return { name: d.name, value: d.id } })
+      }]);
+      const data = await employee.getEmployeeByDepBudg(inquire.id);
+      await employee.parseData(data);
+      initF();
+      return;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async viewAllDepartments() {
     try {
       const employee = new Employee();
@@ -182,7 +201,7 @@ class Init {
       const employee = new Employee();
       const employees = await employee.getAllEmployee();
       const roles = await employee.getAllRole();
-      const managers = await employee.getEmployeeIsManager();
+      // const managers = await employee.getEmployeeIsManager();
       const data = await inquirer.prompt([
         {
           name: 'employee_id',
@@ -197,6 +216,38 @@ class Init {
           choices: roles.map(r => { return { name: r.title, value: r.id } })
         },
       ]);
+      await employee.updateEmployee(data.employee_id, { role_id: data.role_id });
+      const empF = await employee.getEmployee(data.employee_id);
+      console.log(`\nUpdated ${empF[0].first_name + ' ' + empF[0].last_name + ' to ' + empF[0].title} in Employees`);
+      initF();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updateEmpMng() {
+    try {
+      const employee = new Employee();
+      const employees = await employee.getAllEmployee();
+      const managers = await employee.getEmployeeIsManager();
+      const data = await inquirer.prompt([
+        {
+          name: 'employee_id',
+          type: 'list',
+          message: "Please select an employee",
+          choices: employees.map(e => { return { name: e.first_name + ' ' + e.last_name + ' | ' + e.manager, value: e.id } })
+        },
+        {
+          name: 'manager_id',
+          type: 'list',
+          message: "Please select the updated manager for the employee",
+          choices: managers.map(m => { return { name: m.first_name + ' ' + m.last_name, value: m.id } })
+        },
+      ]);
+      await employee.updateEmployee(data.employee_id, { manager_id: data.manager_id });
+      const empF = await employee.getEmployee(data.employee_id);
+      console.log(`\nUpdated ${empF[0].first_name + ' ' + empF[0].last_name + ' to ' + empF[0].manager} in Employees`);
+      initF();
     } catch (error) {
       console.log(error);
     }
@@ -219,6 +270,7 @@ const initF = () => {
           { name: "View all Employees", value: "viewAllEmp" },
           { name: "View all Employees by Department", value: "viewEmpByDep" },
           { name: "View all Employees by Manager", value: "viewEmpByMng" },
+          { name: "View Utilized Budget of Department", value: "viewBudgDep" },
           { name: "View all Departments", value: "viewAllDepartments" },
           { name: "View all Roles", value: "viewAllRoles" },
           new inquirer.Separator("---= Add Queries =---"),
@@ -227,6 +279,7 @@ const initF = () => {
           { name: "Add Department", value: "addDep" },
           new inquirer.Separator("---= Update Queries =---"),
           { name: "Update Employee Role", value: "updateEmpRole" },
+          { name: "Update Employee Manager", value: "updateEmpMng" },
           // { name: "Update Department", value: "updateDep" },
           // { name: "Update Role", value: "updateRole" },
           // { name: "Update Employee", value: "updateEmployee" },
@@ -253,6 +306,9 @@ const initF = () => {
       case "viewEmpByMng":
         init.viewEmpByMng();
         break;
+      case "viewBudgDep":
+        init.viewBudgDep();
+        break;
       case "viewAllDepartments":
         init.viewAllDepartments();
         break;
@@ -270,6 +326,9 @@ const initF = () => {
         break;
       case "updateEmpRole":
         init.updateEmpRole();
+        break;
+      case "updateEmpMng":
+        init.updateEmpMng();
         break;
       case "closeApp":
         db.close();

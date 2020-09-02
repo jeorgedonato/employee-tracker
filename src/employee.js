@@ -24,13 +24,15 @@ module.exports = class Employee extends Role {
     }
   }
 
-  getEmployee(id) {
-    db.query("select * from employees where ?",
-      { id: id },
-      function (err, res) {
-        if (err) throw err;
-        return res;
-      });
+  async getEmployee(id) {
+    try {
+      const db = new Database();
+      let query = await db.query("select emp.id,emp.first_name,emp.last_name,r.title,d.name as department,r.salary,concat(mng.first_name, ' ', mng.last_name) as manager from employees emp inner join roles r on emp.role_id = r.id inner join departments d on r.department_id = d.id left join employees mng on mng.id = emp.manager_id where emp.id = ?", [id]);
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getEmployeeIsManager() {
@@ -66,6 +68,17 @@ module.exports = class Employee extends Role {
     }
   }
 
+  async getEmployeeByDepBudg(department_id) {
+    try {
+      const db = new Database();
+      let query = await db.query(`select d.name,sum(r.salary) as budget from employees emp inner join roles r on emp.role_id = r.id inner join departments d on r.department_id = d.id left join employees mng on mng.id = emp.manager_id where r.department_id = ${department_id}`);
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async addEmployee(data) {
     try {
       const db = new Database();
@@ -77,16 +90,15 @@ module.exports = class Employee extends Role {
     }
   }
 
-  updateEmployee(id, data) {
-    db.query("update employees set ? where ?",
-      [{
-        data
-      },
-      { id: id }],
-      function (err, res) {
-        if (err) throw err;
-        console.log("Updated 1 Employee!");
-      });
+  async updateEmployee(id, data) {
+    try {
+      const db = new Database();
+      let query = await db.query("update employees set ? where id = ?", [data, id]);
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   deleteEmployee(id) {

@@ -1,6 +1,6 @@
--- Drops the programming_db if it already exists --
+-- Drops the tracker_db if it already exists --
 DROP DATABASE IF EXISTS tracker_db;
--- Create a database called programming_db --
+-- Create a database called tracker_db --
 CREATE DATABASE tracker_db;
 USE tracker_db;
 CREATE TABLE departments(
