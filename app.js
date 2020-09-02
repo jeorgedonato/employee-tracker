@@ -253,6 +253,27 @@ class Init {
     }
   }
 
+  async deleteEmp() {
+    try {
+      const employee = new Employee();
+      const employees = await employee.getAllEmployee();
+      const data = await inquirer.prompt([
+        {
+          name: 'employee_id',
+          type: 'list',
+          message: "Please select an employee to delete",
+          choices: employees.map(e => { return { name: `${e.first_name} ${e.last_name} | ${e.title}`, value: e.id } })
+        }
+      ]);
+      await employee.deleteEmployee(data.employee_id);
+      // const empF = await employee.getEmployee(data.employee_id);
+      console.log(`\nEmployee Deleted!`);
+      initF();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 }
 //End Class Init
 
@@ -283,8 +304,8 @@ const initF = () => {
           // { name: "Update Department", value: "updateDep" },
           // { name: "Update Role", value: "updateRole" },
           // { name: "Update Employee", value: "updateEmployee" },
-          // new inquirer.Separator("---= Delete Queries =---"),
-          // { name: "Delete Employee", value: "deleteDep" },
+          new inquirer.Separator("---= Delete Queries =---"),
+          { name: "Delete Employee", value: "deleteEmp" },
           // { name: "Delete Role", value: "deleteRole" },
           // { name: "Delete Employee", value: "deleteEmployee" },
           new inquirer.Separator("---= Close App Query =---"),
@@ -329,6 +350,9 @@ const initF = () => {
         break;
       case "updateEmpMng":
         init.updateEmpMng();
+        break;
+      case "deleteEmp":
+        init.deleteEmp();
         break;
       case "closeApp":
         db.close();

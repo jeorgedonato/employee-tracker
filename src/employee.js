@@ -101,13 +101,15 @@ module.exports = class Employee extends Role {
     }
   }
 
-  deleteEmployee(id) {
-    db.query("delete from employees where ?",
-      { id: id },
-      function (err, res) {
-        if (err) throw err;
-        console.log("Deleted 1 Employee!");
-      });
+  async deleteEmployee(id) {
+    try {
+      const db = new Database();
+      let query = await db.query("delete from employees where id = ?", [id]);
+      db.close();
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 
